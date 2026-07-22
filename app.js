@@ -4,6 +4,8 @@ const card = document.getElementById("card");
 const btnSkip = document.getElementById("btn-skip");
 const btnWatched = document.getElementById("btn-watched");
 
+const PRELOAD_AHEAD = 3;
+
 let films = [];
 let index = 0;
 let page = 0;
@@ -23,6 +25,10 @@ function render(film) {
   card.append(img, label);
 }
 
+function preload(film) {
+  if (film && film.poster) new Image().src = film.poster;
+}
+
 async function showNext() {
   if (index >= films.length) {
     page += 1;
@@ -30,6 +36,7 @@ async function showNext() {
     index = 0;
   }
   render(films[index]);
+  films.slice(index + 1, index + 1 + PRELOAD_AHEAD).forEach(preload);
 }
 
 async function act(action) {
