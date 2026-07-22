@@ -1,0 +1,18 @@
+# Secrets and personal data
+tmdb_api_key
+tmbd_read_jwt
+config.js
+*.zip
+
+# Letterboxd export CSVs
+profile.csv
+watched.csv
+watchlist.csv
+ratings.csv
+diary.csv
+reviews.csv
+comments.csv
+
+# OS and editor cruft
+.DS_Store
+Thumbs.db
