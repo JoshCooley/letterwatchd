@@ -1,8 +1,16 @@
 import { fetchPopular } from "./tmdb.js";
 
 const card = document.getElementById("card");
+const btnSkip = document.getElementById("btn-skip");
+const btnWatched = document.getElementById("btn-watched");
+
+let current = null;
+
+btnSkip.addEventListener("click", () => console.info("skip", current));
+btnWatched.addEventListener("click", () => console.info("watched", current));
 
 function render(film) {
+  current = film;
   if (!film) { card.textContent = "No films."; return; }
   card.innerHTML = "";
   const img = document.createElement("img");
