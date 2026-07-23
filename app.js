@@ -1,6 +1,7 @@
 import { fetchPopular } from "./tmdb.js";
 
 const card = document.getElementById("card");
+const btnBack = document.getElementById("btn-back");
 const btnSkip = document.getElementById("btn-skip");
 const btnWatched = document.getElementById("btn-watched");
 
@@ -10,6 +11,7 @@ let films = [];
 let index = 0;
 let page = 0;
 
+btnBack.addEventListener("click", back);
 btnSkip.addEventListener("click", () => act("skip"));
 btnWatched.addEventListener("click", () => act("watched"));
 
@@ -29,11 +31,12 @@ function preload(film) {
   if (film && film.poster) new Image().src = film.poster;
 }
 
-async function showNext() {
-  if (index >= films.length) {
+async function show() {
+  while (index >= films.length) {
     page += 1;
-    films = await fetchPopular(page);
-    index = 0;
+    const next = await fetchPopular(page);
+    if (!next.length) break;
+    films.push(...next);
   }
   render(films[index]);
   films.slice(index + 1, index + 1 + PRELOAD_AHEAD).forEach(preload);
@@ -44,15 +47,21 @@ async function act(action) {
   if (film) console.info(action, film);
   index += 1;
   try {
-    await showNext();
+    await show();
   } catch (e) {
     card.textContent = "Failed to load: " + e.message;
   }
 }
 
+function back() {
+  if (index === 0) return;
+  index -= 1;
+  render(films[index]);
+}
+
 async function start() {
   try {
-    await showNext();
+    await show();
   } catch (e) {
     card.textContent = "Failed to load: " + e.message;
   }
