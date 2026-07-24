@@ -9,7 +9,7 @@ const PRELOAD_AHEAD = 3;
 
 let films = [];
 let index = 0;
-let page = 0;
+let pagesFetched = 0;
 
 btnBack.addEventListener("click", back);
 btnSkip.addEventListener("click", () => act("skip"));
@@ -33,8 +33,8 @@ function preload(film) {
 
 async function show() {
   while (index >= films.length) {
-    page += 1;
-    const next = await fetchPopular(page);
+    pagesFetched += 1;
+    const next = await fetchPopular(pagesFetched);
     if (!next.length) break;
     films.push(...next);
   }
