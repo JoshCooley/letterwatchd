@@ -1,4 +1,5 @@
 import { fetchPopular } from "./tmdb.js";
+import { record } from "./store.js";
 
 const card = document.getElementById("card");
 const btnBack = document.getElementById("btn-back");
@@ -44,7 +45,10 @@ async function show() {
 
 async function act(action) {
   const film = films[index];
-  if (film) console.info(action, film);
+  if (film) {
+    console.info(action, film);
+    record(action, film);
+  }
   index += 1;
   try {
     await show();
