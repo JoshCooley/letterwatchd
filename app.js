@@ -1,5 +1,5 @@
 import { fetchPopular } from "./tmdb.js";
-import { record } from "./store.js";
+import { record, seenIds } from "./store.js";
 
 const card = document.getElementById("card");
 const btnBack = document.getElementById("btn-back");
@@ -37,7 +37,8 @@ async function show() {
     pagesFetched += 1;
     const next = await fetchPopular(pagesFetched);
     if (!next.length) break;
-    films.push(...next);
+    const seen = seenIds();
+    films.push(...next.filter((f) => !seen.has(String(f.tmdbID))));
   }
   render(films[index]);
   films.slice(index + 1, index + 1 + PRELOAD_AHEAD).forEach(preload);
