@@ -12,6 +12,13 @@ function save(key, obj) {
   localStorage.setItem(key, JSON.stringify(obj));
 }
 
+export function seenIds() {
+  return new Set([
+    ...Object.keys(load(KEYS.watched)),
+    ...Object.keys(load(KEYS.skip)),
+  ]);
+}
+
 export function record(action, film) {
   const key = KEYS[action];
   const obj = load(key);
