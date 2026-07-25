@@ -19,9 +19,20 @@ export function seenIds() {
   ]);
 }
 
+export function isWatched(tmdbID) {
+  return String(tmdbID) in load(KEYS.watched);
+}
+
 export function record(action, film) {
   const key = KEYS[action];
   const obj = load(key);
   obj[film.tmdbID] = { title: film.title, year: film.year };
+  save(key, obj);
+}
+
+export function unrecord(action, film) {
+  const key = KEYS[action];
+  const obj = load(key);
+  delete obj[film.tmdbID];
   save(key, obj);
 }

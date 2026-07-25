@@ -1,5 +1,5 @@
 import { fetchPopular } from "./tmdb.js";
-import { record, seenIds } from "./store.js";
+import { record, unrecord, isWatched, seenIds } from "./store.js";
 
 const card = document.getElementById("card");
 const btnBack = document.getElementById("btn-back");
@@ -17,7 +17,12 @@ btnSkip.addEventListener("click", () => act("skip"));
 btnWatched.addEventListener("click", () => act("watched"));
 
 function render(film) {
-  if (!film) { card.textContent = "No films."; return; }
+  const watched = film && isWatched(film.tmdbID);
+  btnWatched.textContent = watched ? "Mark Unwatched" : "Mark Watched";
+  if (!film) {
+    card.textContent = "No films.";
+    return;
+  }
   card.innerHTML = "";
   const img = document.createElement("img");
   img.src = film.poster;
@@ -44,32 +49,33 @@ async function show() {
   films.slice(index + 1, index + 1 + PRELOAD_AHEAD).forEach(preload);
 }
 
-async function act(action) {
-  const film = films[index];
-  if (film) {
-    console.info(action, film);
-    record(action, film);
-  }
-  index += 1;
+async function refresh() {
   try {
     await show();
   } catch (e) {
     card.textContent = "Failed to load: " + e.message;
   }
+}
+
+function apply(action, film) {
+  if (action === "watched" && isWatched(film.tmdbID)) unrecord("watched", film);
+  else record(action, film);
+}
+
+function act(action) {
+  const film = films[index];
+  if (film) {
+    console.info(action, film);
+    apply(action, film);
+  }
+  index += 1;
+  refresh();
 }
 
 function back() {
   if (index === 0) return;
   index -= 1;
-  render(films[index]);
+  refresh();
 }
 
-async function start() {
-  try {
-    await show();
-  } catch (e) {
-    card.textContent = "Failed to load: " + e.message;
-  }
-}
-
-start();
+refresh();
