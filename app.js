@@ -1,10 +1,11 @@
 import { fetchPopular } from "./tmdb.js";
-import { record, unrecord, isWatched, seenIds } from "./store.js";
+import { record, unrecord, isWatched, seenIds, clear } from "./store.js";
 
 const card = document.getElementById("card");
 const btnBack = document.getElementById("btn-back");
 const btnSkip = document.getElementById("btn-skip");
 const btnWatched = document.getElementById("btn-watched");
+const btnReset = document.getElementById("btn-reset");
 
 const PRELOAD_AHEAD = 3;
 
@@ -15,6 +16,7 @@ let pagesFetched = 0;
 btnBack.addEventListener("click", back);
 btnSkip.addEventListener("click", () => act("skip"));
 btnWatched.addEventListener("click", () => act("watched"));
+btnReset.addEventListener("click", reset);
 
 function render(film) {
   const watched = film && isWatched(film.tmdbID);
@@ -75,6 +77,12 @@ function act(action) {
   }
   index += 1;
   refresh();
+}
+
+function reset() {
+  if (!confirm("Reset all saved skips and watched films?")) return;
+  clear();
+  render(films[index]);
 }
 
 function back() {
