@@ -68,3 +68,11 @@ export function clear() {
   localStorage.removeItem(KEYS.skip);
   localStorage.removeItem(KEYS.exclude);
 }
+
+export function isListsHidden() {
+  return localStorage.getItem("lw.listsHidden") === "1";
+}
+
+export function setListsHidden(hidden) {
+  localStorage.setItem("lw.listsHidden", hidden ? "1" : "0");
+}
