@@ -1,6 +1,13 @@
-function field(value) {
-  const s = String(value ?? "");
-  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+import { parse, stringify } from "./vendor/csv.min.js";
+
+export function parseCsv(text) {
+  const rows = parse(text);
+  const header = rows.shift() || [];
+  return rows.map((cells) => {
+    const obj = {};
+    header.forEach((h, i) => (obj[h] = cells[i]));
+    return obj;
+  });
 }
 
 export function buildWatchedCsv(list) {
@@ -8,7 +15,7 @@ export function buildWatchedCsv(list) {
   for (const [id, film] of Object.entries(list)) {
     rows.push([id, film.title, film.year]);
   }
-  return rows.map((r) => r.map(field).join(",")).join("\n");
+  return stringify(rows);
 }
 
 export function downloadCsv(filename, text) {
