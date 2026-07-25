@@ -36,3 +36,8 @@ export function unrecord(action, film) {
   delete obj[film.tmdbID];
   save(key, obj);
 }
+
+export function clear() {
+  localStorage.removeItem(KEYS.watched);
+  localStorage.removeItem(KEYS.skip);
+}
