@@ -7,6 +7,9 @@
   --green: #00e054;
   --blue: #40bcf4;
   --orange: #ff8000;
+  --glow-width: 130px;
+  --glow-feather: 100%;
+  --glow-mask: linear-gradient(to bottom, transparent, #000 calc(var(--glow-feather) / 2), #000 calc(100% - var(--glow-feather) / 2), transparent);
 }
 
 * {
@@ -24,6 +27,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
 }
 
 header {
@@ -145,6 +149,35 @@ main {
 
 .stamp.skip {
   color: var(--orange);
+}
+
+.deck-row {
+  position: relative;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+}
+
+.glow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--glow-width);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  -webkit-mask-image: var(--glow-mask);
+  mask-image: var(--glow-mask);
+}
+
+.glow.left {
+  left: 0;
+  background: linear-gradient(to right, var(--orange), transparent);
+}
+
+.glow.right {
+  right: 0;
+  background: linear-gradient(to left, var(--green), transparent);
 }
 
 .toolbar,
