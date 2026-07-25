@@ -77,6 +77,7 @@ function act(action) {
   if (film) {
     apply(action, film);
     console.info(result(action, film), film);
+    refreshLists();
   }
   index += 1;
   refresh();
@@ -84,6 +85,10 @@ function act(action) {
 
 function toggleLists() {
   listsEl.hidden = !listsEl.hidden;
+  if (!listsEl.hidden) renderLists();
+}
+
+function refreshLists() {
   if (!listsEl.hidden) renderLists();
 }
 
@@ -113,6 +118,7 @@ function reset() {
   if (!confirm("Reset all saved skips and watched films?")) return;
   clear();
   render(films[index]);
+  refreshLists();
 }
 
 function back() {
