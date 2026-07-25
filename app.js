@@ -1,5 +1,5 @@
 import { fetchPopular } from "./tmdb.js";
-import { record, unrecord, isWatched, seenIds, clear, getList, addExclusions, excludedKeys, getExclusions, removeExclusion } from "./store.js";
+import { record, unrecord, isWatched, seenIds, clear, getList, addExclusions, excludedKeys, getExclusions, removeExclusion, isListsHidden, setListsHidden } from "./store.js";
 import { buildWatchedCsv, downloadCsv, parseCsv } from "./csv.js";
 import { titleYearKey } from "./film.js";
 import { extractFromZip } from "./zip.js";
@@ -139,8 +139,14 @@ async function importFile(file) {
 
 function toggleLists() {
   listsEl.hidden = !listsEl.hidden;
+  setListsHidden(listsEl.hidden);
   btnLists.textContent = listsEl.hidden ? "Show Lists" : "Hide Lists";
   if (!listsEl.hidden) renderLists();
+}
+
+function applyListsVisibility() {
+  listsEl.hidden = isListsHidden();
+  btnLists.textContent = listsEl.hidden ? "Show Lists" : "Hide Lists";
 }
 
 function refreshLists() {
@@ -162,7 +168,8 @@ function listEntries(map, remove) {
 
 function renderSection(title, items) {
   const heading = document.createElement("h2");
-  heading.textContent = title;
+  heading.textContent = `${title} (${items.length})`;
+  if (!items.length) heading.classList.add("empty");
   const ul = document.createElement("ul");
   for (const { film, remove } of items) {
     const li = document.createElement("li");
@@ -193,4 +200,6 @@ function back() {
   refresh();
 }
 
+applyListsVisibility();
+renderLists();
 refresh();
