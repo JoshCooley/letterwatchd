@@ -24,8 +24,8 @@ let index = 0;
 let pagesFetched = 0;
 
 btnBack.addEventListener("click", back);
-btnSkip.addEventListener("click", () => act("skip"));
-btnWatched.addEventListener("click", () => act("watched"));
+btnSkip.addEventListener("click", () => swipe.left());
+btnWatched.addEventListener("click", () => swipe.right());
 btnReset.addEventListener("click", reset);
 btnLists.addEventListener("click", toggleLists);
 btnExport.addEventListener("click", exportCsv);
@@ -36,7 +36,12 @@ importInput.addEventListener("change", () => {
   importInput.value = "";
 });
 
-enableSwipe(card, { peek: nextCard, onLeft: () => act("skip"), onRight: () => act("watched") });
+const swipe = enableSwipe(card, { peek: nextCard, onLeft: () => act("skip"), onRight: () => act("watched") });
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") swipe.right();
+  else if (e.key === "ArrowLeft") swipe.left();
+});
 
 function paint(el, film) {
   const content = el.querySelector(".content");
