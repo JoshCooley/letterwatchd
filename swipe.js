@@ -15,8 +15,10 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
   let startX = 0;
   let dx = 0;
   let dragging = false;
+  let finishFling = null;
 
   function down(e) {
+    if (finishFling) finishFling();
     dragging = true;
     startX = e.clientX;
     dx = 0;
@@ -60,15 +62,18 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
     card.style.opacity = "0";
     peek.style.transition = `opacity ${PEEK_FLING_SECONDS}s ease`;
     peek.style.opacity = "1";
-    card.addEventListener("transitionend", function end() {
-      card.removeEventListener("transitionend", end);
+    function finish() {
+      card.removeEventListener("transitionend", finish);
+      finishFling = null;
       card.style.transition = "none";
       card.style.transform = "";
       card.style.opacity = "";
       watch.style.opacity = "0";
       skip.style.opacity = "0";
       (dir > 0 ? onRight : onLeft)();
-    });
+    }
+    finishFling = finish;
+    card.addEventListener("transitionend", finish);
   }
 
   card.addEventListener("pointerdown", down);
