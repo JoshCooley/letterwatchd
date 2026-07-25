@@ -63,11 +63,14 @@ async function refresh() {
 }
 
 function apply(action, film) {
-  if (action === "watched" && isWatched(film.tmdbID)) {
+  const watched = isWatched(film.tmdbID);
+  if (action === "skip") {
+    if (!watched) record("skip", film);
+  } else if (watched) {
     unrecord("watched", film);
   } else {
-    record(action, film);
-    if (action === "watched") unrecord("skip", film);
+    record("watched", film);
+    unrecord("skip", film);
   }
 }
 
