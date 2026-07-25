@@ -126,6 +126,7 @@ async function importFile(file) {
 
 function toggleLists() {
   listsEl.hidden = !listsEl.hidden;
+  btnLists.textContent = listsEl.hidden ? "Show Lists" : "Hide Lists";
   if (!listsEl.hidden) renderLists();
 }
 
