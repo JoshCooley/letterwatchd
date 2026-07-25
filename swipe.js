@@ -9,6 +9,9 @@ const PEEK_FLING_SECONDS = 0.5; // how long the next card takes to fade fully in
 const SNAP_SECONDS = 0.2;      // snap-back duration when a drag is released short of THRESHOLD
 
 export function enableSwipe(card, { peek, onLeft, onRight }) {
+  const watch = card.querySelector(".stamp.watch");
+  const skip = card.querySelector(".stamp.skip");
+
   let startX = 0;
   let dx = 0;
   let dragging = false;
@@ -19,6 +22,8 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
     dx = 0;
     card.style.transition = "none";
     peek.style.transition = "none";
+    watch.style.transition = "none";
+    skip.style.transition = "none";
     card.setPointerCapture(e.pointerId);
   }
 
@@ -27,6 +32,9 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
     dx = e.clientX - startX;
     card.style.transform = `translateX(${dx}px) rotate(${dx / TILT}deg)`;
     peek.style.opacity = Math.min(Math.abs(dx) / (THRESHOLD * PEEK_FADE), 1);
+    const stamp = Math.min(Math.abs(dx) / THRESHOLD, 1);
+    watch.style.opacity = dx > 0 ? stamp : 0;
+    skip.style.opacity = dx > 0 ? 0 : stamp;
   }
 
   function up() {
@@ -37,6 +45,10 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
       card.style.transform = "";
       peek.style.transition = `opacity ${SNAP_SECONDS}s ease`;
       peek.style.opacity = "0";
+      watch.style.transition = `opacity ${SNAP_SECONDS}s ease`;
+      skip.style.transition = `opacity ${SNAP_SECONDS}s ease`;
+      watch.style.opacity = "0";
+      skip.style.opacity = "0";
       return;
     }
     const dir = dx > 0 ? 1 : -1;
@@ -53,6 +65,8 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
       card.style.transition = "none";
       card.style.transform = "";
       card.style.opacity = "";
+      watch.style.opacity = "0";
+      skip.style.opacity = "0";
       (dir > 0 ? onRight : onLeft)();
     });
   }

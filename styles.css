@@ -89,15 +89,12 @@ main {
 
 #card,
 #next {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
   min-height: 360px;
   text-align: center;
 }
 
 #card {
+  position: relative;
   touch-action: none;
   user-select: none;
   cursor: grab;
@@ -108,8 +105,14 @@ main {
   pointer-events: none;
 }
 
-#card img,
-#next img {
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.content img {
   width: 240px;
   border-radius: 4px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
@@ -117,11 +120,31 @@ main {
   pointer-events: none;
 }
 
-#card div,
-#next div {
+.content > div {
   color: var(--heading);
   font-size: 1.1rem;
   font-weight: 600;
+}
+
+.stamp {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 7rem;
+  line-height: 1;
+  font-weight: 800;
+  opacity: 0;
+  pointer-events: none;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.7);
+}
+
+.stamp.watch {
+  color: var(--green);
+}
+
+.stamp.skip {
+  color: var(--orange);
 }
 
 .toolbar,
