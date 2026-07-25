@@ -62,11 +62,16 @@ function apply(action, film) {
   else record(action, film);
 }
 
+function result(action, film) {
+  if (action === "skip") return "skipped";
+  return isWatched(film.tmdbID) ? "watched" : "unwatched";
+}
+
 function act(action) {
   const film = films[index];
   if (film) {
-    console.info(action, film);
     apply(action, film);
+    console.info(result(action, film), film);
   }
   index += 1;
   refresh();
