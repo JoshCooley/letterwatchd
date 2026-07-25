@@ -41,6 +41,7 @@ const swipe = enableSwipe(card, { peek: nextCard, onLeft: () => act("skip"), onR
 document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowRight") swipe.right();
   else if (e.key === "ArrowLeft") swipe.left();
+  else if (e.key === "Backspace") { e.preventDefault(); back(); }
 });
 
 function paint(el, film) {
