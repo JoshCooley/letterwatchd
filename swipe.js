@@ -7,10 +7,13 @@ const FLING_LIFT = 0.15;       // upward drift while flinging, in viewport heigh
 const FLING_SPIN = 50;         // extra degrees the card spins as it flings off
 const PEEK_FLING_SECONDS = 0.5; // how long the next card takes to fade fully in during a fling
 const SNAP_SECONDS = 0.2;      // snap-back duration when a drag is released short of THRESHOLD
+const GLOW_MAX = 0.4;          // peak opacity of the edge glow
 
 export function enableSwipe(card, { peek, onLeft, onRight }) {
   const watch = card.querySelector(".stamp.watch");
   const skip = card.querySelector(".stamp.skip");
+  const glowLeft = document.querySelector(".glow.left");
+  const glowRight = document.querySelector(".glow.right");
 
   let startX = 0;
   let dx = 0;
@@ -26,6 +29,8 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
     peek.style.transition = "none";
     watch.style.transition = "none";
     skip.style.transition = "none";
+    glowLeft.style.transition = "none";
+    glowRight.style.transition = "none";
     card.setPointerCapture(e.pointerId);
   }
 
@@ -37,6 +42,15 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
     const stamp = Math.min(Math.abs(dx) / THRESHOLD, 1);
     watch.style.opacity = dx > 0 ? stamp : 0;
     skip.style.opacity = dx > 0 ? 0 : stamp;
+    glowRight.style.opacity = dx > 0 ? stamp * GLOW_MAX : 0;
+    glowLeft.style.opacity = dx > 0 ? 0 : stamp * GLOW_MAX;
+  }
+
+  function fadeGlows(seconds) {
+    glowLeft.style.transition = `opacity ${seconds}s ease`;
+    glowRight.style.transition = `opacity ${seconds}s ease`;
+    glowLeft.style.opacity = "0";
+    glowRight.style.opacity = "0";
   }
 
   function up() {
@@ -51,6 +65,7 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
       skip.style.transition = `opacity ${SNAP_SECONDS}s ease`;
       watch.style.opacity = "0";
       skip.style.opacity = "0";
+      fadeGlows(SNAP_SECONDS);
       return;
     }
     const dir = dx > 0 ? 1 : -1;
@@ -62,6 +77,7 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
     card.style.opacity = "0";
     peek.style.transition = `opacity ${PEEK_FLING_SECONDS}s ease`;
     peek.style.opacity = "1";
+    fadeGlows(FLING_SECONDS);
     function finish() {
       card.removeEventListener("transitionend", finish);
       finishFling = null;
