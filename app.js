@@ -3,6 +3,7 @@ import { record, unrecord, isWatched, seenIds, clear, getList, addExclusions, ex
 import { buildWatchedCsv, downloadCsv, parseCsv } from "./csv.js";
 import { titleYearKey } from "./film.js";
 import { extractFromZip } from "./zip.js";
+import { enableSwipe } from "./swipe.js";
 
 const card = document.getElementById("card");
 const btnBack = document.getElementById("btn-back");
@@ -33,6 +34,8 @@ importInput.addEventListener("change", () => {
   if (file) importFile(file);
   importInput.value = "";
 });
+
+enableSwipe(card);
 
 function render(film) {
   const watched = film && isWatched(film.tmdbID);
