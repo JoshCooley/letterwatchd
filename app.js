@@ -2,6 +2,7 @@ import { fetchPopular } from "./tmdb.js";
 import { record, unrecord, isWatched, seenIds, clear, getList, addExclusions, excludedKeys, getExclusions, removeExclusion } from "./store.js";
 import { buildWatchedCsv, downloadCsv, parseCsv } from "./csv.js";
 import { titleYearKey } from "./film.js";
+import { extractFromZip } from "./zip.js";
 
 const card = document.getElementById("card");
 const btnBack = document.getElementById("btn-back");
@@ -108,8 +109,11 @@ function exportCsv() {
 }
 
 async function importFile(file) {
+  const text = file.name.toLowerCase().endsWith(".zip")
+    ? extractFromZip(await file.arrayBuffer(), "watched.csv")
+    : await file.text();
   const map = {};
-  for (const r of parseCsv(await file.text())) {
+  for (const r of parseCsv(text)) {
     const key = titleYearKey(r.Name, r.Year);
     if (key !== "|") map[key] = { title: r.Name, year: r.Year };
   }
