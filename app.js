@@ -6,6 +6,7 @@ import { extractFromZip } from "./zip.js";
 import { enableSwipe } from "./swipe.js";
 
 const card = document.getElementById("card");
+const nextCard = document.getElementById("next");
 const btnBack = document.getElementById("btn-back");
 const btnSkip = document.getElementById("btn-skip");
 const btnWatched = document.getElementById("btn-watched");
@@ -35,23 +36,26 @@ importInput.addEventListener("change", () => {
   importInput.value = "";
 });
 
-enableSwipe(card, { onLeft: () => act("skip"), onRight: () => act("watched") });
+enableSwipe(card, { peek: nextCard, onLeft: () => act("skip"), onRight: () => act("watched") });
 
-function render(film) {
-  const watched = film && isWatched(film.tmdbID);
-  btnWatched.textContent = watched ? "Mark Unwatched" : "Mark Watched";
-  if (!film) {
-    card.textContent = "No films.";
-    return;
-  }
-  card.innerHTML = "";
+function paint(el, film) {
+  el.innerHTML = "";
+  if (!film) return;
   const img = document.createElement("img");
   img.src = film.poster;
   img.alt = film.title;
-  img.width = 150;
   const label = document.createElement("div");
   label.textContent = `${film.title} (${film.year})`;
-  card.append(img, label);
+  el.append(img, label);
+}
+
+function render(film) {
+  btnWatched.textContent = film && isWatched(film.tmdbID) ? "Mark Unwatched" : "Mark Watched";
+  if (film) paint(card, film);
+  else card.textContent = "No films.";
+  paint(nextCard, films[index + 1]);
+  nextCard.style.transition = "none";
+  nextCard.style.opacity = "0";
 }
 
 function preload(film) {
