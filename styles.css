@@ -86,12 +86,17 @@ main {
   gap: 12px;
   min-height: 360px;
   text-align: center;
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
 }
 
 #card img {
   width: 240px;
   border-radius: 4px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+  -webkit-user-drag: none;
+  pointer-events: none;
 }
 
 #card div {
