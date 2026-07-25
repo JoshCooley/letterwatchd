@@ -53,6 +53,40 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
     glowRight.style.opacity = "0";
   }
 
+  function fling(dir) {
+    if (finishFling) finishFling();
+    watch.style.transition = "none";
+    skip.style.transition = "none";
+    watch.style.opacity = dir > 0 ? "1" : "0";
+    skip.style.opacity = dir > 0 ? "0" : "1";
+    card.style.transition = `transform ${FLING_SECONDS}s ease-out, opacity ${FLING_SECONDS}s ease-out`;
+    card.style.transform = `translate(${dir * innerWidth * FLING_REACH}px, ${-innerHeight * FLING_LIFT}px) rotate(${dx / TILT + dir * FLING_SPIN}deg)`;
+    card.style.opacity = "0";
+    peek.style.transition = `opacity ${PEEK_FLING_SECONDS}s ease`;
+    peek.style.opacity = "1";
+    const glow = dir > 0 ? glowRight : glowLeft;
+    const otherGlow = dir > 0 ? glowLeft : glowRight;
+    otherGlow.style.transition = `opacity ${FLING_SECONDS}s ease`;
+    otherGlow.style.opacity = "0";
+    glow.style.transition = "none";
+    glow.style.opacity = GLOW_MAX;
+    void glow.offsetWidth; // reflow so the glow fades from full even on a key/button fling
+    glow.style.transition = `opacity ${FLING_SECONDS}s ease`;
+    glow.style.opacity = "0";
+    function finish() {
+      card.removeEventListener("transitionend", finish);
+      finishFling = null;
+      card.style.transition = "none";
+      card.style.transform = "";
+      card.style.opacity = "";
+      watch.style.opacity = "0";
+      skip.style.opacity = "0";
+      (dir > 0 ? onRight : onLeft)();
+    }
+    finishFling = finish;
+    card.addEventListener("transitionend", finish);
+  }
+
   function up() {
     if (!dragging) return;
     dragging = false;
@@ -68,32 +102,16 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
       fadeGlows(SNAP_SECONDS);
       return;
     }
-    const dir = dx > 0 ? 1 : -1;
-    const x = dir * innerWidth * FLING_REACH;
-    const y = -innerHeight * FLING_LIFT;
-    const rot = dx / TILT + dir * FLING_SPIN;
-    card.style.transition = `transform ${FLING_SECONDS}s ease-out, opacity ${FLING_SECONDS}s ease-out`;
-    card.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
-    card.style.opacity = "0";
-    peek.style.transition = `opacity ${PEEK_FLING_SECONDS}s ease`;
-    peek.style.opacity = "1";
-    fadeGlows(FLING_SECONDS);
-    function finish() {
-      card.removeEventListener("transitionend", finish);
-      finishFling = null;
-      card.style.transition = "none";
-      card.style.transform = "";
-      card.style.opacity = "";
-      watch.style.opacity = "0";
-      skip.style.opacity = "0";
-      (dir > 0 ? onRight : onLeft)();
-    }
-    finishFling = finish;
-    card.addEventListener("transitionend", finish);
+    fling(dx > 0 ? 1 : -1);
   }
 
   card.addEventListener("pointerdown", down);
   card.addEventListener("pointermove", move);
   card.addEventListener("pointerup", up);
   card.addEventListener("pointercancel", up);
+
+  return {
+    left: () => { dx = 0; fling(-1); },
+    right: () => { dx = 0; fling(1); },
+  };
 }
