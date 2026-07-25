@@ -56,19 +56,14 @@ header {
 }
 
 .mark {
-  display: inline-flex;
-  gap: 4px;
+  height: 0.85em;
+  width: auto;
+  transform: translateY(-0.05em);
 }
 
-.mark i {
-  font-style: normal;
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-.mark i:nth-child(1) { color: var(--orange); }
-.mark i:nth-child(2) { color: var(--green); }
-.mark i:nth-child(3) { color: var(--blue); }
+.eye1 { color: var(--orange); }
+.eye2 { color: var(--green); }
+.eye3 { color: var(--blue); }
 
 main {
   width: 100%;
