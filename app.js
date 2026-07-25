@@ -113,6 +113,7 @@ function renderLists() {
       remove.addEventListener("click", () => {
         unrecord(action, { tmdbID: id });
         renderLists();
+        render(films[index]);
       });
       li.append(remove);
       ul.append(li);
