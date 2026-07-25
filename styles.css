@@ -265,6 +265,27 @@ button:hover {
   font-size: 0.85rem;
 }
 
+.howto {
+  width: 100%;
+  max-width: 640px;
+  padding: 0 16px;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.howto h2 {
+  color: var(--heading);
+  font-size: 1rem;
+}
+
+.howto code {
+  color: var(--heading);
+}
+
+.howto a {
+  color: var(--blue);
+}
+
 footer {
   color: var(--text);
   font-size: 0.8rem;
