@@ -35,7 +35,7 @@ importInput.addEventListener("change", () => {
   importInput.value = "";
 });
 
-enableSwipe(card);
+enableSwipe(card, { onLeft: () => act("skip"), onRight: () => act("watched") });
 
 function render(film) {
   const watched = film && isWatched(film.tmdbID);
