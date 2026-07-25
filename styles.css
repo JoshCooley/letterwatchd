@@ -16,7 +16,7 @@
 body {
   margin: 0;
   min-height: 100vh;
-  padding: 24px 16px;
+  padding: 0 0 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -28,7 +28,15 @@ body {
 
 header {
   width: 100%;
-  max-width: 640px;
+  background: linear-gradient(#1e262d, #14181c);
+  border-bottom: 1px solid #10151a;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.bar {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 14px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -36,17 +44,36 @@ header {
   flex-wrap: wrap;
 }
 
-h1 {
+.logo {
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: var(--heading);
-  font-size: 1.4rem;
+  font-size: 1.25rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
+
+.mark {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.mark i {
+  font-style: normal;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.mark i:nth-child(1) { color: var(--orange); }
+.mark i:nth-child(2) { color: var(--green); }
+.mark i:nth-child(3) { color: var(--blue); }
 
 main {
   width: 100%;
   max-width: 640px;
+  padding: 0 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -94,6 +121,21 @@ button {
 
 button:hover {
   border-color: var(--blue);
+}
+
+.toolbar button {
+  background: none;
+  border: none;
+  padding: 6px 8px;
+  color: var(--text);
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.toolbar button:hover {
+  color: var(--heading);
 }
 
 .controls button {
