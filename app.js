@@ -1,6 +1,7 @@
 import { fetchPopular } from "./tmdb.js";
-import { record, unrecord, isWatched, seenIds, clear, getList } from "./store.js";
-import { buildWatchedCsv, downloadCsv } from "./csv.js";
+import { record, unrecord, isWatched, seenIds, clear, getList, addExclusions, excludedKeys, getExclusions, removeExclusion } from "./store.js";
+import { buildWatchedCsv, downloadCsv, parseCsv } from "./csv.js";
+import { titleYearKey } from "./film.js";
 
 const card = document.getElementById("card");
 const btnBack = document.getElementById("btn-back");
@@ -9,6 +10,8 @@ const btnWatched = document.getElementById("btn-watched");
 const btnReset = document.getElementById("btn-reset");
 const btnLists = document.getElementById("btn-lists");
 const btnExport = document.getElementById("btn-export");
+const btnImport = document.getElementById("btn-import");
+const importInput = document.getElementById("import-input");
 const listsEl = document.getElementById("lists");
 
 const PRELOAD_AHEAD = 3;
@@ -23,6 +26,12 @@ btnWatched.addEventListener("click", () => act("watched"));
 btnReset.addEventListener("click", reset);
 btnLists.addEventListener("click", toggleLists);
 btnExport.addEventListener("click", exportCsv);
+btnImport.addEventListener("click", () => importInput.click());
+importInput.addEventListener("change", () => {
+  const file = importInput.files[0];
+  if (file) importFile(file);
+  importInput.value = "";
+});
 
 function render(film) {
   const watched = film && isWatched(film.tmdbID);
@@ -51,7 +60,8 @@ async function show() {
     const next = await fetchPopular(pagesFetched);
     if (!next.length) break;
     const seen = seenIds();
-    films.push(...next.filter((f) => !seen.has(String(f.tmdbID))));
+    const excluded = excludedKeys();
+    films.push(...next.filter((f) => !seen.has(String(f.tmdbID)) && !excluded.has(titleYearKey(f.title, f.year))));
   }
   render(films[index]);
   films.slice(index + 1, index + 1 + PRELOAD_AHEAD).forEach(preload);
@@ -97,6 +107,19 @@ function exportCsv() {
   downloadCsv("letterwatchd-watched.csv", buildWatchedCsv(getList("watched")));
 }
 
+async function importFile(file) {
+  const map = {};
+  for (const r of parseCsv(await file.text())) {
+    const key = titleYearKey(r.Name, r.Year);
+    if (key !== "|") map[key] = { title: r.Name, year: r.Year };
+  }
+  addExclusions(map);
+  const excluded = excludedKeys();
+  films = films.filter((f, i) => i <= index || !excluded.has(titleYearKey(f.title, f.year)));
+  refresh();
+  refreshLists();
+}
+
 function toggleLists() {
   listsEl.hidden = !listsEl.hidden;
   if (!listsEl.hidden) renderLists();
@@ -108,25 +131,35 @@ function refreshLists() {
 
 function renderLists() {
   listsEl.innerHTML = "";
-  for (const action of ["watched", "skip"]) {
-    const heading = document.createElement("h2");
-    heading.textContent = action === "watched" ? "Watched" : "Skipped";
-    const ul = document.createElement("ul");
-    for (const [id, film] of Object.entries(getList(action))) {
-      const li = document.createElement("li");
-      li.textContent = `${film.title} (${film.year}) `;
-      const remove = document.createElement("button");
-      remove.textContent = "Remove";
-      remove.addEventListener("click", () => {
-        unrecord(action, { tmdbID: id });
-        renderLists();
-        render(films[index]);
-      });
-      li.append(remove);
-      ul.append(li);
-    }
-    listsEl.append(heading, ul);
+  renderSection("Watched", [
+    ...listEntries(getList("watched"), (id) => unrecord("watched", { tmdbID: id })),
+    ...listEntries(getExclusions(), (key) => removeExclusion(key)),
+  ]);
+  renderSection("Skipped", listEntries(getList("skip"), (id) => unrecord("skip", { tmdbID: id })));
+}
+
+function listEntries(map, remove) {
+  return Object.entries(map).map(([id, film]) => ({ film, remove: () => remove(id) }));
+}
+
+function renderSection(title, items) {
+  const heading = document.createElement("h2");
+  heading.textContent = title;
+  const ul = document.createElement("ul");
+  for (const { film, remove } of items) {
+    const li = document.createElement("li");
+    li.textContent = `${film.title} (${film.year}) `;
+    const btn = document.createElement("button");
+    btn.textContent = "Remove";
+    btn.addEventListener("click", () => {
+      remove();
+      renderLists();
+      render(films[index]);
+    });
+    li.append(btn);
+    ul.append(li);
   }
+  listsEl.append(heading, ul);
 }
 
 function reset() {

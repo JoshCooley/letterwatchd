@@ -1,4 +1,4 @@
-const KEYS = { watched: "lw.watched", skip: "lw.skip" };
+const KEYS = { watched: "lw.watched", skip: "lw.skip", exclude: "lw.exclude" };
 
 function load(key) {
   try {
@@ -41,7 +41,30 @@ export function unrecord(action, film) {
   save(key, obj);
 }
 
+// Films already logged on Letterboxd (imported watched.csv), keyed by
+// title+year. Shown in the lists and hidden from the deck, but not exported.
+export function addExclusions(map) {
+  const obj = load(KEYS.exclude);
+  Object.assign(obj, map);
+  save(KEYS.exclude, obj);
+}
+
+export function getExclusions() {
+  return load(KEYS.exclude);
+}
+
+export function excludedKeys() {
+  return new Set(Object.keys(load(KEYS.exclude)));
+}
+
+export function removeExclusion(key) {
+  const obj = load(KEYS.exclude);
+  delete obj[key];
+  save(KEYS.exclude, obj);
+}
+
 export function clear() {
   localStorage.removeItem(KEYS.watched);
   localStorage.removeItem(KEYS.skip);
+  localStorage.removeItem(KEYS.exclude);
 }
