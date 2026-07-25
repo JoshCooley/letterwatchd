@@ -39,20 +39,21 @@ importInput.addEventListener("change", () => {
 enableSwipe(card, { peek: nextCard, onLeft: () => act("skip"), onRight: () => act("watched") });
 
 function paint(el, film) {
-  el.innerHTML = "";
+  const content = el.querySelector(".content");
+  content.innerHTML = "";
   if (!film) return;
   const img = document.createElement("img");
   img.src = film.poster;
   img.alt = film.title;
   const label = document.createElement("div");
   label.textContent = `${film.title} (${film.year})`;
-  el.append(img, label);
+  content.append(img, label);
 }
 
 function render(film) {
   btnWatched.textContent = film && isWatched(film.tmdbID) ? "Mark Unwatched" : "Mark Watched";
   if (film) paint(card, film);
-  else card.textContent = "No films.";
+  else card.querySelector(".content").textContent = "No films.";
   paint(nextCard, films[index + 1]);
   nextCard.style.transition = "none";
   nextCard.style.opacity = "0";
