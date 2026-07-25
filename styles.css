@@ -46,13 +46,17 @@ header {
 
 .logo {
   margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.logo a {
   display: flex;
   align-items: center;
   gap: 10px;
   color: var(--heading);
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  text-decoration: none;
 }
 
 .mark {
