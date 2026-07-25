@@ -14,7 +14,7 @@ export function enableSwipe(card) {
   function move(e) {
     if (!dragging) return;
     dx = e.clientX - startX;
-    card.style.transform = `translateX(${dx}px) rotate(${dx / 20}deg)`;
+    card.style.transform = `translateX(${dx}px) rotate(${dx / 8}deg)`;
   }
 
   function up() {
