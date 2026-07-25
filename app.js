@@ -1,5 +1,6 @@
 import { fetchPopular } from "./tmdb.js";
 import { record, unrecord, isWatched, seenIds, clear, getList } from "./store.js";
+import { buildWatchedCsv, downloadCsv } from "./csv.js";
 
 const card = document.getElementById("card");
 const btnBack = document.getElementById("btn-back");
@@ -7,6 +8,7 @@ const btnSkip = document.getElementById("btn-skip");
 const btnWatched = document.getElementById("btn-watched");
 const btnReset = document.getElementById("btn-reset");
 const btnLists = document.getElementById("btn-lists");
+const btnExport = document.getElementById("btn-export");
 const listsEl = document.getElementById("lists");
 
 const PRELOAD_AHEAD = 3;
@@ -20,6 +22,7 @@ btnSkip.addEventListener("click", () => act("skip"));
 btnWatched.addEventListener("click", () => act("watched"));
 btnReset.addEventListener("click", reset);
 btnLists.addEventListener("click", toggleLists);
+btnExport.addEventListener("click", exportCsv);
 
 function render(film) {
   const watched = film && isWatched(film.tmdbID);
@@ -88,6 +91,10 @@ function act(action) {
   }
   index += 1;
   refresh();
+}
+
+function exportCsv() {
+  downloadCsv("letterwatchd-watched.csv", buildWatchedCsv(getList("watched")));
 }
 
 function toggleLists() {
