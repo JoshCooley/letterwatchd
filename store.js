@@ -12,6 +12,10 @@ function save(key, obj) {
   localStorage.setItem(key, JSON.stringify(obj));
 }
 
+export function getList(action) {
+  return load(KEYS[action]);
+}
+
 export function seenIds() {
   return new Set([
     ...Object.keys(load(KEYS.watched)),

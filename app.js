@@ -1,11 +1,13 @@
 import { fetchPopular } from "./tmdb.js";
-import { record, unrecord, isWatched, seenIds, clear } from "./store.js";
+import { record, unrecord, isWatched, seenIds, clear, getList } from "./store.js";
 
 const card = document.getElementById("card");
 const btnBack = document.getElementById("btn-back");
 const btnSkip = document.getElementById("btn-skip");
 const btnWatched = document.getElementById("btn-watched");
 const btnReset = document.getElementById("btn-reset");
+const btnLists = document.getElementById("btn-lists");
+const listsEl = document.getElementById("lists");
 
 const PRELOAD_AHEAD = 3;
 
@@ -17,6 +19,7 @@ btnBack.addEventListener("click", back);
 btnSkip.addEventListener("click", () => act("skip"));
 btnWatched.addEventListener("click", () => act("watched"));
 btnReset.addEventListener("click", reset);
+btnLists.addEventListener("click", toggleLists);
 
 function render(film) {
   const watched = film && isWatched(film.tmdbID);
@@ -77,6 +80,33 @@ function act(action) {
   }
   index += 1;
   refresh();
+}
+
+function toggleLists() {
+  listsEl.hidden = !listsEl.hidden;
+  if (!listsEl.hidden) renderLists();
+}
+
+function renderLists() {
+  listsEl.innerHTML = "";
+  for (const action of ["watched", "skip"]) {
+    const heading = document.createElement("h2");
+    heading.textContent = action === "watched" ? "Watched" : "Skipped";
+    const ul = document.createElement("ul");
+    for (const [id, film] of Object.entries(getList(action))) {
+      const li = document.createElement("li");
+      li.textContent = `${film.title} (${film.year}) `;
+      const remove = document.createElement("button");
+      remove.textContent = "Remove";
+      remove.addEventListener("click", () => {
+        unrecord(action, { tmdbID: id });
+        renderLists();
+      });
+      li.append(remove);
+      ul.append(li);
+    }
+    listsEl.append(heading, ul);
+  }
 }
 
 function reset() {
