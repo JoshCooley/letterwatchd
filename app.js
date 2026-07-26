@@ -16,6 +16,7 @@ const btnExport = document.getElementById("btn-export");
 const btnImport = document.getElementById("btn-import");
 const importInput = document.getElementById("import-input");
 const listsEl = document.getElementById("lists");
+const toast = document.getElementById("toast");
 
 const PRELOAD_AHEAD = 3;
 
@@ -122,21 +123,36 @@ function exportCsv() {
   downloadCsv("letterwatchd-watched.csv", buildWatchedCsv(getList("watched")));
 }
 
+let toastTimer;
+function showToast(message) {
+  toast.textContent = message;
+  toast.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => (toast.hidden = true), 4000);
+}
+
 async function importFile(file) {
   swipe.settle();
-  const text = file.name.toLowerCase().endsWith(".zip")
-    ? extractFromZip(await file.arrayBuffer(), "watched.csv")
-    : await file.text();
-  const map = {};
-  for (const r of parseCsv(text)) {
-    const key = titleYearKey(r.Name, r.Year);
-    if (key !== "|") map[key] = { title: r.Name, year: r.Year };
+  try {
+    const text = file.name.toLowerCase().endsWith(".zip")
+      ? extractFromZip(await file.arrayBuffer(), "watched.csv")
+      : await file.text();
+    const map = {};
+    for (const r of parseCsv(text)) {
+      const key = titleYearKey(r.Name, r.Year);
+      if (key !== "|") map[key] = { title: r.Name, year: r.Year };
+    }
+    const count = Object.keys(map).length;
+    if (!count) throw new Error("no films found (expected a Letterboxd watched.csv)");
+    addExclusions(map);
+    const excluded = excludedKeys();
+    films = films.filter((f, i) => i <= index || !excluded.has(titleYearKey(f.title, f.year)));
+    refresh();
+    refreshLists();
+    showToast(`Imported ${count} film${count === 1 ? "" : "s"} to hide.`);
+  } catch (e) {
+    showToast("Import failed: " + e.message);
   }
-  addExclusions(map);
-  const excluded = excludedKeys();
-  films = films.filter((f, i) => i <= index || !excluded.has(titleYearKey(f.title, f.year)));
-  refresh();
-  refreshLists();
 }
 
 function toggleLists() {
