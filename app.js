@@ -170,7 +170,13 @@ function result(action, film) {
 function act(action) {
   const film = films[index];
   if (!film) return;
-  apply(action, film);
+  try {
+    apply(action, film);
+  } catch (e) {
+    if (!(e instanceof DOMException)) throw e;
+    showToast("Couldn't save (storage may be full).");
+    return;
+  }
   console.info(result(action, film), film);
   refreshLists();
   index += 1;
