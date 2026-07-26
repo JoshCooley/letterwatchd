@@ -420,3 +420,18 @@ footer {
 footer a {
   color: var(--blue);
 }
+
+footer .github {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+}
+
+footer .github:hover {
+  color: var(--heading);
+}
+
+footer p {
+  margin: 0 0 8px;
+}
