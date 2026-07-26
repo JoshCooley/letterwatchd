@@ -83,11 +83,21 @@ function paint(el, film) {
     const img = document.createElement("img");
     img.src = film.poster;
     img.alt = film.title;
+    img.addEventListener("error", () => img.replaceWith(posterPlaceholder()));
     content.append(img);
+  } else {
+    content.append(posterPlaceholder());
   }
   const label = document.createElement("div");
   label.textContent = `${film.title} (${film.year})`;
   content.append(label);
+}
+
+function posterPlaceholder() {
+  const box = document.createElement("div");
+  box.className = "no-poster";
+  box.textContent = "No Poster";
+  return box;
 }
 
 function render(film) {
