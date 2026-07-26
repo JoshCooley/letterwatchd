@@ -27,7 +27,7 @@ Runs entirely in the browser, no backend.
 1. **Import** (optional): upload your Letterboxd `watched.csv`, or the whole export
    `.zip`, to hide films you've already logged. Get it at
    https://letterboxd.com/user/exportdata/. Matching is by title + year.
-2. **Swipe** the card, use the **Skip** / **Mark Watched** buttons, or the
+2. **Swipe** the card, use the **Skip** / **Watch** buttons, or the
    **left / right arrow keys**. **Back** (or Backspace) steps to the previous film.
 3. **Show Lists** to review your Watched and Skipped films and remove individual
    entries. **Reset** clears everything saved.

@@ -57,7 +57,7 @@ function paint(el, film) {
 }
 
 function render(film) {
-  btnWatched.textContent = film && isWatched(film.tmdbID) ? "Mark Unwatched" : "Mark Watched";
+  btnWatched.querySelector(".label").textContent = film && isWatched(film.tmdbID) ? "Unwatch" : "Watch";
   if (film) paint(card, film);
   else card.querySelector(".content").textContent = "No films.";
   paint(nextCard, films[index + 1]);
