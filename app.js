@@ -104,6 +104,7 @@ async function show() {
     }
     if (gen !== generation) return;
     if (!next.length) break;
+    // read fresh each page so a new import still applies.
     const seen = seenIds();
     const excluded = excludedKeys();
     const have = new Set(films.map((f) => String(f.tmdbID)));
@@ -212,6 +213,7 @@ function renderLists() {
   const watchedKeys = new Set(Object.values(watched).map((f) => titleYearKey(f.title, f.year)));
   const watchedEntries = Object.entries(watched).map(([id, film]) => {
     const key = titleYearKey(film.title, film.year);
+    // a same title+year import shares this key, so we can't tell them apart. accepted.
     return { film, remove: () => { unrecord("watched", { tmdbID: id }); removeExclusion(key); } };
   });
   const exclusionEntries = Object.entries(getExclusions())
@@ -242,6 +244,7 @@ function renderSection(key, title, items) {
     const btn = document.createElement("button");
     btn.textContent = "Remove";
     btn.addEventListener("click", () => {
+      // removes from storage; the film comes back to the deck only after a page refresh.
       remove();
       renderLists();
       render(films[index]);
@@ -267,6 +270,7 @@ function renderSection(key, title, items) {
 function reset() {
   if (!confirm("Reset all saved skips and watched films?")) return;
   clear();
+  // deck stays as-is; a page refresh rebuilds it.
   render(films[index]);
   refreshLists();
 }
