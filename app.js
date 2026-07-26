@@ -177,7 +177,7 @@ async function importFile(file) {
     const map = {};
     for (const r of parseCsv(text)) {
       const key = titleYearKey(r.Name, r.Year);
-      if (key !== "|") map[key] = { title: r.Name, year: r.Year };
+      if (!key.startsWith("|")) map[key] = { title: r.Name, year: r.Year };
     }
     const count = Object.keys(map).length;
     if (!count) throw new Error("no films found (expected a Letterboxd watched.csv)");
