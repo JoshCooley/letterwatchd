@@ -5,7 +5,6 @@ const FLING_SECONDS = 0.7;     // fling-off duration (higher = slower)
 const FLING_REACH = 1;         // how far the card flings, in viewport widths
 const FLING_LIFT = 0.15;       // upward drift while flinging, in viewport heights
 const FLING_SPIN = 50;         // extra degrees the card spins as it flings off
-const PEEK_FLING_SECONDS = 0.5; // how long the next card takes to fade fully in during a fling
 const SNAP_SECONDS = 0.2;      // snap-back duration when a drag is released short of THRESHOLD
 const GLOW_MAX = 0.4;          // peak opacity of the edge glow
 
@@ -18,10 +17,8 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
   let startX = 0;
   let dx = 0;
   let dragging = false;
-  let finishFling = null;
 
   function down(e) {
-    if (finishFling) finishFling();
     dragging = true;
     startX = e.clientX;
     dx = 0;
@@ -53,38 +50,49 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
     glowRight.style.opacity = "0";
   }
 
-  function fling(dir) {
-    if (finishFling) finishFling();
-    watch.style.transition = "none";
-    skip.style.transition = "none";
-    watch.style.opacity = dir > 0 ? "1" : "0";
-    skip.style.opacity = dir > 0 ? "0" : "1";
-    card.style.transition = `transform ${FLING_SECONDS}s ease-out, opacity ${FLING_SECONDS}s ease-out`;
-    card.style.transform = `translate(${dir * innerWidth * FLING_REACH}px, ${-innerHeight * FLING_LIFT}px) rotate(${dx / TILT + dir * FLING_SPIN}deg)`;
-    card.style.opacity = "0";
-    peek.style.transition = `opacity ${PEEK_FLING_SECONDS}s ease`;
-    peek.style.opacity = "1";
+  function flashGlow(dir) {
     const glow = dir > 0 ? glowRight : glowLeft;
-    const otherGlow = dir > 0 ? glowLeft : glowRight;
-    otherGlow.style.transition = `opacity ${FLING_SECONDS}s ease`;
-    otherGlow.style.opacity = "0";
+    const other = dir > 0 ? glowLeft : glowRight;
+    other.style.transition = `opacity ${FLING_SECONDS}s ease`;
+    other.style.opacity = "0";
     glow.style.transition = "none";
     glow.style.opacity = GLOW_MAX;
-    void glow.offsetWidth; // reflow so the glow fades from full even on a key/button fling
+    void glow.offsetWidth; // reflow so it fades from full even on a key/button fling
     glow.style.transition = `opacity ${FLING_SECONDS}s ease`;
     glow.style.opacity = "0";
-    function finish() {
-      card.removeEventListener("transitionend", finish);
-      finishFling = null;
-      card.style.transition = "none";
-      card.style.transform = "";
-      card.style.opacity = "";
-      watch.style.opacity = "0";
-      skip.style.opacity = "0";
-      (dir > 0 ? onRight : onLeft)();
-    }
-    finishFling = finish;
-    card.addEventListener("transitionend", finish);
+  }
+
+  // A detached copy of the card that flies off on its own and removes itself,
+  // so several can animate at once (fling one, then fling the next mid-flight).
+  function flyAway(dir) {
+    const flyer = card.cloneNode(true);
+    flyer.removeAttribute("id");
+    flyer.classList.add("flyer");
+    flyer.style.transition = "none";
+    flyer.style.transform = `translateX(${dx}px) rotate(${dx / TILT}deg)`;
+    flyer.style.opacity = "1";
+    flyer.querySelector(".stamp.watch").style.opacity = dir > 0 ? "1" : "0";
+    flyer.querySelector(".stamp.skip").style.opacity = dir > 0 ? "0" : "1";
+    card.parentElement.appendChild(flyer);
+    void flyer.offsetWidth;
+    flyer.style.transition = `transform ${FLING_SECONDS}s ease-out, opacity ${FLING_SECONDS}s ease-out`;
+    flyer.style.transform = `translate(${dir * innerWidth * FLING_REACH}px, ${-innerHeight * FLING_LIFT}px) rotate(${dx / TILT + dir * FLING_SPIN}deg)`;
+    flyer.style.opacity = "0";
+    flyer.addEventListener("transitionend", function done() {
+      flyer.removeEventListener("transitionend", done);
+      flyer.remove();
+    });
+  }
+
+  function fling(dir) {
+    flyAway(dir);
+    flashGlow(dir);
+    card.style.transition = "none";
+    card.style.transform = "";
+    card.style.opacity = "";
+    watch.style.opacity = "0";
+    skip.style.opacity = "0";
+    (dir > 0 ? onRight : onLeft)();
   }
 
   function up() {
@@ -113,6 +121,6 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
   return {
     left: () => { dx = 0; fling(-1); },
     right: () => { dx = 0; fling(1); },
-    settle: () => { if (finishFling) finishFling(); },
+    settle: () => {},
   };
 }
