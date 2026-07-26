@@ -234,7 +234,28 @@ button:hover {
 
 .controls .skip,
 .controls .watched {
-  width: 160px;
+  position: relative;
+  width: 110px;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.3em;
+  line-height: 1;
+}
+
+.skip .arrow {
+  left: 1px;
+}
+
+.watched .arrow {
+  right: 1px;
+}
+
+.undo {
+  margin-right: 6px;
 }
 
 #btn-back {
