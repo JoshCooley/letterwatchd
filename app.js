@@ -131,9 +131,11 @@ function changeSource() {
 }
 
 async function refresh() {
+  const gen = generation;
   try {
     await show();
   } catch (e) {
+    if (gen !== generation) return;
     card.querySelector(".content").textContent = "Failed to load: " + e.message;
   }
 }
