@@ -101,15 +101,16 @@ async function show() {
   while (index >= films.length) {
     if (loading) return;
     loading = true;
-    pagesFetched += 1;
+    const page = pagesFetched + 1;
     let next;
     try {
-      next = await fetchFilms(source, pagesFetched);
+      next = await fetchFilms(source, page);
     } finally {
       // a stale fetch must not clear the current generation's flag.
       if (gen === generation) loading = false;
     }
     if (gen !== generation) return;
+    pagesFetched = page; // advance only on success, so a failed fetch retries the page.
     if (!next.length) break;
     // read fresh each page so a new import still applies.
     const seen = seenIds();
