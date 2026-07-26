@@ -178,7 +178,7 @@ function act(action) {
     return;
   }
   console.info(result(action, film), film);
-  refreshLists();
+  renderLists();
   index += 1;
   refresh();
 }
@@ -211,15 +211,11 @@ async function importFile(file) {
     const excluded = excludedKeys();
     films = films.filter((f, i) => i <= index || !excluded.has(titleYearKey(f.title, f.year)));
     refresh();
-    refreshLists();
+    renderLists();
     showToast(`Imported ${count} film${count === 1 ? "" : "s"} to hide.`);
   } catch (e) {
     showToast("Import failed: " + e.message);
   }
-}
-
-function refreshLists() {
-  renderLists();
 }
 
 function renderLists() {
@@ -287,7 +283,7 @@ function reset() {
   clear();
   // deck stays as-is; a page refresh rebuilds it.
   render(films[index]);
-  refreshLists();
+  renderLists();
 }
 
 function back() {
