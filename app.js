@@ -21,6 +21,8 @@ const genreSelect = document.getElementById("genre");
 const sortSelect = document.getElementById("sort");
 
 const PRELOAD_AHEAD = 3;
+const FETCH_RETRIES = 3;      // auto-retries before showing the Retry button
+const RETRY_DELAY = 1000;     // ms between auto-retries (fixed, no backoff)
 
 let films = [];
 let index = 0;
@@ -151,12 +153,32 @@ function changeSource() {
 
 async function refresh() {
   const gen = generation;
-  try {
-    await show();
-  } catch (e) {
-    if (gen !== generation) return;
-    card.querySelector(".content").textContent = "Failed to load: " + e.message;
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await show();
+      return;
+    } catch (e) {
+      if (gen !== generation) return;
+      if (attempt < FETCH_RETRIES) {
+        await new Promise((r) => setTimeout(r, RETRY_DELAY));
+        if (gen !== generation) return;
+        continue;
+      }
+      showLoadError(e);
+      return;
+    }
   }
+}
+
+function showLoadError(e) {
+  const content = card.querySelector(".content");
+  content.innerHTML = "";
+  const msg = document.createElement("div");
+  msg.textContent = "Failed to load: " + e.message;
+  const retry = document.createElement("button");
+  retry.textContent = "Retry";
+  retry.addEventListener("click", refresh);
+  content.append(msg, retry);
 }
 
 function apply(action, film) {
