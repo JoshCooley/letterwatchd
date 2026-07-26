@@ -46,6 +46,12 @@ for (const s of SORT_NAMES) sortSelect.append(new Option(s, s));
 listSelect.value = source.list;
 genreSelect.value = source.genre;
 sortSelect.value = source.sort;
+// a stored source the selects reject (stale build, hand-edited) falls back to the default option.
+if (!listSelect.value) listSelect.selectedIndex = 0;
+if (!genreSelect.value) genreSelect.selectedIndex = 0;
+if (!sortSelect.value) sortSelect.selectedIndex = 0;
+source = { list: listSelect.value, genre: genreSelect.value, sort: sortSelect.value };
+setSource(source);
 updateSourceControls();
 listSelect.addEventListener("change", changeSource);
 genreSelect.addEventListener("change", changeSource);
