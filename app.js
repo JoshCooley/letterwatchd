@@ -50,7 +50,7 @@ sortSelect.value = source.sort;
 if (!listSelect.value) listSelect.selectedIndex = 0;
 if (!genreSelect.value) genreSelect.selectedIndex = 0;
 if (!sortSelect.value) sortSelect.selectedIndex = 0;
-source = { list: listSelect.value, genre: genreSelect.value, sort: sortSelect.value };
+source = readSource();
 setSource(source);
 updateSourceControls();
 listSelect.addEventListener("change", changeSource);
@@ -128,8 +128,12 @@ function updateSourceControls() {
   sortSelect.hidden = !byGenre;
 }
 
+function readSource() {
+  return { list: listSelect.value, genre: genreSelect.value, sort: sortSelect.value };
+}
+
 function changeSource() {
-  source = { list: listSelect.value, genre: genreSelect.value, sort: sortSelect.value };
+  source = readSource();
   setSource(source);
   updateSourceControls();
   films = [];
