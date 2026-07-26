@@ -70,15 +70,11 @@ export function clear() {
 const DEFAULT_SOURCE = { list: "popular", genre: "Action", sort: "Popularity" };
 
 export function getSource() {
-  try {
-    return { ...DEFAULT_SOURCE, ...JSON.parse(localStorage.getItem("lw.source")) };
-  } catch (e) {
-    return { ...DEFAULT_SOURCE };
-  }
+  return { ...DEFAULT_SOURCE, ...load("lw.source") };
 }
 
 export function setSource(source) {
-  localStorage.setItem("lw.source", JSON.stringify(source));
+  save("lw.source", source);
 }
 
 export function isCollapsed(section) {
