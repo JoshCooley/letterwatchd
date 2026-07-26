@@ -49,12 +49,15 @@ function paint(el, film) {
   const content = el.querySelector(".content");
   content.innerHTML = "";
   if (!film) return;
-  const img = document.createElement("img");
-  img.src = film.poster;
-  img.alt = film.title;
+  if (film.poster) {
+    const img = document.createElement("img");
+    img.src = film.poster;
+    img.alt = film.title;
+    content.append(img);
+  }
   const label = document.createElement("div");
   label.textContent = `${film.title} (${film.year})`;
-  content.append(img, label);
+  content.append(label);
 }
 
 function render(film) {
