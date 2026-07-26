@@ -26,6 +26,7 @@ let films = [];
 let index = 0;
 let pagesFetched = 0;
 let source = getSource();
+let generation = 0;
 
 btnBack.addEventListener("click", back);
 btnSkip.addEventListener("click", () => swipe.left());
@@ -89,9 +90,11 @@ function preload(film) {
 }
 
 async function show() {
+  const gen = generation;
   while (index >= films.length) {
     pagesFetched += 1;
     const next = await fetchFilms(source, pagesFetched);
+    if (gen !== generation) return;
     if (!next.length) break;
     const seen = seenIds();
     const excluded = excludedKeys();
@@ -115,6 +118,7 @@ function changeSource() {
   films = [];
   index = 0;
   pagesFetched = 0;
+  generation += 1;
   refresh();
 }
 
