@@ -76,7 +76,8 @@ async function show() {
     if (!next.length) break;
     const seen = seenIds();
     const excluded = excludedKeys();
-    films.push(...next.filter((f) => !seen.has(String(f.tmdbID)) && !excluded.has(titleYearKey(f.title, f.year))));
+    const have = new Set(films.map((f) => String(f.tmdbID)));
+    films.push(...next.filter((f) => !have.has(String(f.tmdbID)) && !seen.has(String(f.tmdbID)) && !excluded.has(titleYearKey(f.title, f.year))));
   }
   render(films[index]);
   films.slice(index + 1, index + 1 + PRELOAD_AHEAD).forEach(preload);
@@ -86,7 +87,7 @@ async function refresh() {
   try {
     await show();
   } catch (e) {
-    card.textContent = "Failed to load: " + e.message;
+    card.querySelector(".content").textContent = "Failed to load: " + e.message;
   }
 }
 
@@ -109,11 +110,10 @@ function result(action, film) {
 
 function act(action) {
   const film = films[index];
-  if (film) {
-    apply(action, film);
-    console.info(result(action, film), film);
-    refreshLists();
-  }
+  if (!film) return;
+  apply(action, film);
+  console.info(result(action, film), film);
+  refreshLists();
   index += 1;
   refresh();
 }
@@ -123,6 +123,7 @@ function exportCsv() {
 }
 
 async function importFile(file) {
+  swipe.settle();
   const text = file.name.toLowerCase().endsWith(".zip")
     ? extractFromZip(await file.arrayBuffer(), "watched.csv")
     : await file.text();
@@ -156,10 +157,16 @@ function refreshLists() {
 
 function renderLists() {
   listsEl.innerHTML = "";
-  renderSection("Watched", [
-    ...listEntries(getList("watched"), (id) => unrecord("watched", { tmdbID: id })),
-    ...listEntries(getExclusions(), (key) => removeExclusion(key)),
-  ]);
+  const watched = getList("watched");
+  const watchedKeys = new Set(Object.values(watched).map((f) => titleYearKey(f.title, f.year)));
+  const watchedEntries = Object.entries(watched).map(([id, film]) => {
+    const key = titleYearKey(film.title, film.year);
+    return { film, remove: () => { unrecord("watched", { tmdbID: id }); removeExclusion(key); } };
+  });
+  const exclusionEntries = Object.entries(getExclusions())
+    .filter(([key]) => !watchedKeys.has(key))
+    .map(([key, film]) => ({ film, remove: () => removeExclusion(key) }));
+  renderSection("Watched", [...watchedEntries, ...exclusionEntries]);
   renderSection("Skipped", listEntries(getList("skip"), (id) => unrecord("skip", { tmdbID: id })));
 }
 
@@ -190,12 +197,14 @@ function renderSection(title, items) {
 
 function reset() {
   if (!confirm("Reset all saved skips and watched films?")) return;
+  swipe.settle();
   clear();
   render(films[index]);
   refreshLists();
 }
 
 function back() {
+  swipe.settle();
   if (index === 0) return;
   index -= 1;
   refresh();
