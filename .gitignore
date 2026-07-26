@@ -13,6 +13,9 @@ diary.csv
 reviews.csv
 comments.csv
 
+# Build output
+dist/
+
 # OS and editor cruft
 .DS_Store
 Thumbs.db
