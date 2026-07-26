@@ -153,6 +153,7 @@ async function refresh() {
 function apply(action, film) {
   const watched = isWatched(film.tmdbID);
   if (action === "skip") {
+    // skip leaves an already-watched film watched; unwatch via the Watch button. by design.
     if (!watched) record("skip", film);
   } else if (watched) {
     unrecord("watched", film);
@@ -162,6 +163,7 @@ function apply(action, film) {
   }
 }
 
+// labels the per-action console log below. intentional.
 function result(action, film) {
   if (action === "skip") return "skipped";
   return isWatched(film.tmdbID) ? "watched" : "unwatched";
@@ -209,6 +211,7 @@ async function importFile(file) {
     if (!count) throw new Error("no films found (expected a Letterboxd watched.csv)");
     addExclusions(map);
     const excluded = excludedKeys();
+    // keep the current and previous films; drop later ones the import now hides.
     films = films.filter((f, i) => i <= index || !excluded.has(titleYearKey(f.title, f.year)));
     refresh();
     renderLists();
@@ -218,6 +221,7 @@ async function importFile(file) {
   }
 }
 
+// full rebuild each call; simple over incremental, cheap at realistic list sizes. intentional.
 function renderLists() {
   listsEl.innerHTML = "";
   const watched = getList("watched");
