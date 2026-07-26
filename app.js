@@ -106,7 +106,8 @@ async function show() {
     try {
       next = await fetchFilms(source, pagesFetched);
     } finally {
-      loading = false;
+      // a stale fetch must not clear the current generation's flag.
+      if (gen === generation) loading = false;
     }
     if (gen !== generation) return;
     if (!next.length) break;
@@ -134,6 +135,7 @@ function changeSource() {
   index = 0;
   pagesFetched = 0;
   generation += 1;
+  loading = false;
   refresh();
 }
 
