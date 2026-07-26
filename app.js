@@ -51,7 +51,12 @@ if (!listSelect.value) listSelect.selectedIndex = 0;
 if (!genreSelect.value) genreSelect.selectedIndex = 0;
 if (!sortSelect.value) sortSelect.selectedIndex = 0;
 source = readSource();
-setSource(source);
+// Continue if storage is blocked (e.g. private mode)
+try {
+  setSource(source);
+} catch (e) {
+  if (!(e instanceof DOMException)) throw e;
+}
 updateSourceControls();
 listSelect.addEventListener("change", changeSource);
 genreSelect.addEventListener("change", changeSource);
