@@ -1,5 +1,5 @@
-import { fetchPopular } from "./tmdb.js";
-import { record, unrecord, isWatched, seenIds, clear, getList, addExclusions, excludedKeys, getExclusions, removeExclusion, isCollapsed, setCollapsed } from "./store.js";
+import { fetchFilms, GENRE_NAMES, SORT_NAMES } from "./tmdb.js";
+import { record, unrecord, isWatched, seenIds, clear, getList, addExclusions, excludedKeys, getExclusions, removeExclusion, isCollapsed, setCollapsed, getSource, setSource } from "./store.js";
 import { buildWatchedCsv, downloadCsv, parseCsv } from "./csv.js";
 import { titleYearKey } from "./film.js";
 import { extractFromZip } from "./zip.js";
@@ -16,12 +16,16 @@ const btnImport = document.getElementById("btn-import");
 const importInput = document.getElementById("import-input");
 const listsEl = document.getElementById("lists");
 const toast = document.getElementById("toast");
+const listSelect = document.getElementById("list");
+const genreSelect = document.getElementById("genre");
+const sortSelect = document.getElementById("sort");
 
 const PRELOAD_AHEAD = 3;
 
 let films = [];
 let index = 0;
 let pagesFetched = 0;
+let source = getSource();
 
 btnBack.addEventListener("click", back);
 btnSkip.addEventListener("click", () => swipe.left());
@@ -34,6 +38,16 @@ importInput.addEventListener("change", () => {
   if (file) importFile(file);
   importInput.value = "";
 });
+
+for (const g of GENRE_NAMES) genreSelect.append(new Option(g, g));
+for (const s of SORT_NAMES) sortSelect.append(new Option(s, s));
+listSelect.value = source.list;
+genreSelect.value = source.genre;
+sortSelect.value = source.sort;
+updateSourceControls();
+listSelect.addEventListener("change", changeSource);
+genreSelect.addEventListener("change", changeSource);
+sortSelect.addEventListener("change", changeSource);
 
 const swipe = enableSwipe(card, { peek: nextCard, onLeft: () => act("skip"), onRight: () => act("watched") });
 
@@ -77,7 +91,7 @@ function preload(film) {
 async function show() {
   while (index >= films.length) {
     pagesFetched += 1;
-    const next = await fetchPopular(pagesFetched);
+    const next = await fetchFilms(source, pagesFetched);
     if (!next.length) break;
     const seen = seenIds();
     const excluded = excludedKeys();
@@ -86,6 +100,22 @@ async function show() {
   }
   render(films[index]);
   films.slice(index + 1, index + 1 + PRELOAD_AHEAD).forEach(preload);
+}
+
+function updateSourceControls() {
+  const byGenre = source.list === "genre";
+  genreSelect.hidden = !byGenre;
+  sortSelect.hidden = !byGenre;
+}
+
+function changeSource() {
+  source = { list: listSelect.value, genre: genreSelect.value, sort: sortSelect.value };
+  setSource(source);
+  updateSourceControls();
+  films = [];
+  index = 0;
+  pagesFetched = 0;
+  refresh();
 }
 
 async function refresh() {

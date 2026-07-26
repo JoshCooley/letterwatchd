@@ -27,11 +27,13 @@ Runs entirely in the browser, no backend.
 1. **Import** (optional): upload your Letterboxd `watched.csv`, or the whole export
    `.zip`, to hide films you've already logged. Get it at
    https://letterboxd.com/user/exportdata/. Matching is by title + year.
-2. **Swipe** the card, use the **Skip** / **Watch** buttons, or the
+2. Pick a **source** at the top: Popular (the default), Trending, Top Rated,
+   Now Playing, or **By Genre** (which adds genre and sort menus).
+3. **Swipe** the card, use the **Skip** / **Watch** buttons, or the
    **left / right arrow keys**. **Back** (or Backspace) steps to the previous film.
-3. Review or remove entries in the **Watched** and **Skipped** lists (collapse
+4. Review or remove entries in the **Watched** and **Skipped** lists (collapse
    either to tidy up). **Reset** clears everything saved.
-4. **Export** downloads `letterwatchd-watched.csv` (`tmdbID,Title,Year`). Import it
+5. **Export** downloads `letterwatchd-watched.csv` (`tmdbID,Title,Year`). Import it
    at https://letterboxd.com/import/ as watched films; the tmdbID makes matches
    exact.
 
