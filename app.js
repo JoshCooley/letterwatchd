@@ -27,6 +27,7 @@ let index = 0;
 let pagesFetched = 0;
 let source = getSource();
 let generation = 0;
+let loading = false;
 
 btnBack.addEventListener("click", back);
 btnSkip.addEventListener("click", () => swipe.left());
@@ -92,8 +93,15 @@ function preload(film) {
 async function show() {
   const gen = generation;
   while (index >= films.length) {
+    if (loading) return;
+    loading = true;
     pagesFetched += 1;
-    const next = await fetchFilms(source, pagesFetched);
+    let next;
+    try {
+      next = await fetchFilms(source, pagesFetched);
+    } finally {
+      loading = false;
+    }
     if (gen !== generation) return;
     if (!next.length) break;
     const seen = seenIds();
