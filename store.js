@@ -64,9 +64,7 @@ export function removeExclusion(key) {
 }
 
 export function clear() {
-  localStorage.removeItem(KEYS.watched);
-  localStorage.removeItem(KEYS.skip);
-  localStorage.removeItem(KEYS.exclude);
+  for (const key of Object.values(KEYS)) localStorage.removeItem(key);
 }
 
 export function isListsHidden() {
