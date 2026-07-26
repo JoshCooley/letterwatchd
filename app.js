@@ -1,7 +1,7 @@
 import { fetchFilms, GENRE_NAMES, SORT_NAMES } from "./tmdb.js";
 import { record, unrecord, isWatched, seenIds, clear, getList, addExclusions, excludedKeys, getExclusions, removeExclusion, isCollapsed, setCollapsed, getSource, setSource } from "./store.js";
 import { buildWatchedCsv, downloadCsv, parseCsv } from "./csv.js";
-import { titleYearKey } from "./film.js";
+import { titleYearKey, normalizeTitle } from "./film.js";
 import { extractFromZip } from "./zip.js";
 import { enableSwipe } from "./swipe.js";
 
@@ -186,8 +186,8 @@ async function importFile(file) {
       : await file.text();
     const map = {};
     for (const r of parseCsv(text)) {
-      const key = titleYearKey(r.Name, r.Year);
-      if (!key.startsWith("|")) map[key] = { title: r.Name, year: r.Year };
+      if (!normalizeTitle(r.Name)) continue;
+      map[titleYearKey(r.Name, r.Year)] = { title: r.Name, year: r.Year };
     }
     const count = Object.keys(map).length;
     if (!count) throw new Error("no films found (expected a Letterboxd watched.csv)");
