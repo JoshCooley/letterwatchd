@@ -46,5 +46,5 @@ export async function fetchFilms(source, page = 1) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`TMDB ${res.status}`);
   const data = await res.json();
-  return data.results.map(mapMovie);
+  return (data.results || []).map(mapMovie);
 }
