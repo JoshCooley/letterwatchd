@@ -256,12 +256,12 @@ async function importFile(file) {
 function renderLists() {
   listsEl.innerHTML = "";
   const watched = getList("watched");
-  const watchedKeys = new Set(Object.values(watched).map((f) => titleYearKey(f.title, f.year)));
   const watchedEntries = Object.entries(watched).map(([id, film]) => {
     const key = titleYearKey(film.title, film.year);
     // a same title+year import shares this key, so we can't tell them apart. accepted.
-    return { film, remove: () => { unrecord("watched", { tmdbID: id }); removeExclusion(key); } };
+    return { film, key, remove: () => { unrecord("watched", { tmdbID: id }); removeExclusion(key); } };
   });
+  const watchedKeys = new Set(watchedEntries.map((e) => e.key));
   const exclusionEntries = Object.entries(getExclusions())
     .filter(([key]) => !watchedKeys.has(key))
     .map(([key, film]) => ({ film, remove: () => removeExclusion(key) }));
