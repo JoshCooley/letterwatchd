@@ -67,10 +67,10 @@ export function clear() {
   for (const key of Object.values(KEYS)) localStorage.removeItem(key);
 }
 
-export function isListsHidden() {
-  return localStorage.getItem("lw.listsHidden") === "1";
+export function isCollapsed(section) {
+  return localStorage.getItem("lw.collapse." + section) === "1";
 }
 
-export function setListsHidden(hidden) {
-  localStorage.setItem("lw.listsHidden", hidden ? "1" : "0");
+export function setCollapsed(section, collapsed) {
+  localStorage.setItem("lw.collapse." + section, collapsed ? "1" : "0");
 }

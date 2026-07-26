@@ -29,8 +29,8 @@ Runs entirely in the browser, no backend.
    https://letterboxd.com/user/exportdata/. Matching is by title + year.
 2. **Swipe** the card, use the **Skip** / **Watch** buttons, or the
    **left / right arrow keys**. **Back** (or Backspace) steps to the previous film.
-3. **Show Lists** to review your Watched and Skipped films and remove individual
-   entries. **Reset** clears everything saved.
+3. Review or remove entries in the **Watched** and **Skipped** lists (collapse
+   either to tidy up). **Reset** clears everything saved.
 4. **Export** downloads `letterwatchd-watched.csv` (`tmdbID,Title,Year`). Import it
    at https://letterboxd.com/import/ as watched films; the tmdbID makes matches
    exact.

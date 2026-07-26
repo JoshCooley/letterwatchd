@@ -1,5 +1,5 @@
 import { fetchPopular } from "./tmdb.js";
-import { record, unrecord, isWatched, seenIds, clear, getList, addExclusions, excludedKeys, getExclusions, removeExclusion, isListsHidden, setListsHidden } from "./store.js";
+import { record, unrecord, isWatched, seenIds, clear, getList, addExclusions, excludedKeys, getExclusions, removeExclusion, isCollapsed, setCollapsed } from "./store.js";
 import { buildWatchedCsv, downloadCsv, parseCsv } from "./csv.js";
 import { titleYearKey } from "./film.js";
 import { extractFromZip } from "./zip.js";
@@ -11,7 +11,6 @@ const btnBack = document.getElementById("btn-back");
 const btnSkip = document.getElementById("btn-skip");
 const btnWatched = document.getElementById("btn-watched");
 const btnReset = document.getElementById("btn-reset");
-const btnLists = document.getElementById("btn-lists");
 const btnExport = document.getElementById("btn-export");
 const btnImport = document.getElementById("btn-import");
 const importInput = document.getElementById("import-input");
@@ -28,7 +27,6 @@ btnBack.addEventListener("click", back);
 btnSkip.addEventListener("click", () => swipe.left());
 btnWatched.addEventListener("click", () => swipe.right());
 btnReset.addEventListener("click", reset);
-btnLists.addEventListener("click", toggleLists);
 btnExport.addEventListener("click", exportCsv);
 btnImport.addEventListener("click", () => importInput.click());
 importInput.addEventListener("change", () => {
@@ -160,20 +158,8 @@ async function importFile(file) {
   }
 }
 
-function toggleLists() {
-  listsEl.hidden = !listsEl.hidden;
-  setListsHidden(listsEl.hidden);
-  btnLists.textContent = listsEl.hidden ? "Show Lists" : "Hide Lists";
-  if (!listsEl.hidden) renderLists();
-}
-
-function applyListsVisibility() {
-  listsEl.hidden = isListsHidden();
-  btnLists.textContent = listsEl.hidden ? "Show Lists" : "Hide Lists";
-}
-
 function refreshLists() {
-  if (!listsEl.hidden) renderLists();
+  renderLists();
 }
 
 function renderLists() {
@@ -187,19 +173,25 @@ function renderLists() {
   const exclusionEntries = Object.entries(getExclusions())
     .filter(([key]) => !watchedKeys.has(key))
     .map(([key, film]) => ({ film, remove: () => removeExclusion(key) }));
-  renderSection("Watched", [...watchedEntries, ...exclusionEntries]);
-  renderSection("Skipped", listEntries(getList("skip"), (id) => unrecord("skip", { tmdbID: id })));
+  renderSection("watched", "Watched", [...watchedEntries, ...exclusionEntries]);
+  renderSection("skip", "Skipped", listEntries(getList("skip"), (id) => unrecord("skip", { tmdbID: id })));
 }
 
 function listEntries(map, remove) {
   return Object.entries(map).map(([id, film]) => ({ film, remove: () => remove(id) }));
 }
 
-function renderSection(title, items) {
+function renderSection(key, title, items) {
+  const header = document.createElement("div");
+  header.className = "list-header";
   const heading = document.createElement("h2");
   heading.textContent = `${title} (${items.length})`;
   if (!items.length) heading.classList.add("empty");
+  header.append(heading);
+
+  const collapsed = isCollapsed(key);
   const ul = document.createElement("ul");
+  ul.hidden = collapsed;
   for (const { film, remove } of items) {
     const li = document.createElement("li");
     li.textContent = `${film.title} (${film.year}) `;
@@ -213,7 +205,19 @@ function renderSection(title, items) {
     li.append(btn);
     ul.append(li);
   }
-  listsEl.append(heading, ul);
+
+  if (items.length) {
+    const toggle = document.createElement("button");
+    toggle.className = "collapse-toggle";
+    toggle.textContent = collapsed ? "expand" : "collapse";
+    toggle.addEventListener("click", () => {
+      setCollapsed(key, !collapsed);
+      renderLists();
+    });
+    header.append(toggle);
+  }
+
+  listsEl.append(header, ul);
 }
 
 function reset() {
@@ -229,6 +233,5 @@ function back() {
   refresh();
 }
 
-applyListsVisibility();
 renderLists();
 refresh();
