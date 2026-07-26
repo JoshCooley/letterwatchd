@@ -121,6 +121,5 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
   return {
     left: () => { dx = 0; fling(-1); },
     right: () => { dx = 0; fling(1); },
-    settle: () => {},
   };
 }

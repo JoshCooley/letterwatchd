@@ -138,7 +138,6 @@ function showToast(message) {
 }
 
 async function importFile(file) {
-  swipe.settle();
   try {
     const text = file.name.toLowerCase().endsWith(".zip")
       ? extractFromZip(await file.arrayBuffer(), "watched.csv")
@@ -219,14 +218,12 @@ function renderSection(title, items) {
 
 function reset() {
   if (!confirm("Reset all saved skips and watched films?")) return;
-  swipe.settle();
   clear();
   render(films[index]);
   refreshLists();
 }
 
 function back() {
-  swipe.settle();
   if (index === 0) return;
   index -= 1;
   refresh();
