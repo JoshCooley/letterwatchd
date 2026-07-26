@@ -10,6 +10,7 @@ export function parseCsv(text) {
   });
 }
 
+// format for Letterboxd's import, not this app's.
 export function buildWatchedCsv(list) {
   const rows = [["tmdbID", "Title", "Year"]];
   for (const [id, film] of Object.entries(list)) {
