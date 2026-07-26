@@ -40,6 +40,9 @@ importInput.addEventListener("change", () => {
 const swipe = enableSwipe(card, { peek: nextCard, onLeft: () => act("skip"), onRight: () => act("watched") });
 
 document.addEventListener("keydown", (e) => {
+  if (e.repeat) return;
+  const el = document.activeElement;
+  if (el && (el.isContentEditable || el.tagName === "INPUT" || el.tagName === "TEXTAREA")) return;
   if (e.key === "ArrowRight") swipe.right();
   else if (e.key === "ArrowLeft") swipe.left();
   else if (e.key === "Backspace") { e.preventDefault(); back(); }
