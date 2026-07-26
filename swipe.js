@@ -8,7 +8,8 @@ const FLING_SPIN = 50;         // extra degrees the card spins as it flings off
 const SNAP_SECONDS = 0.2;      // snap-back duration when a drag is released short of THRESHOLD
 const GLOW_MAX = 0.4;          // peak opacity of the edge glow
 
-export function enableSwipe(card, { peek, onLeft, onRight }) {
+export function enableSwipe(card, { peek, onLeft, onRight, canSwipe }) {
+  const allowed = () => !canSwipe || canSwipe();
   const watch = card.querySelector(".stamp.watch");
   const skip = card.querySelector(".stamp.skip");
   const glowLeft = document.querySelector(".glow.left");
@@ -19,6 +20,7 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
   let dragging = false;
 
   function down(e) {
+    if (!allowed()) return;
     dragging = true;
     startX = e.clientX;
     dx = 0;
@@ -119,7 +121,7 @@ export function enableSwipe(card, { peek, onLeft, onRight }) {
   card.addEventListener("pointercancel", up);
 
   return {
-    left: () => { dx = 0; fling(-1); },
-    right: () => { dx = 0; fling(1); },
+    left: () => { if (!allowed()) return; dx = 0; fling(-1); },
+    right: () => { if (!allowed()) return; dx = 0; fling(1); },
   };
 }

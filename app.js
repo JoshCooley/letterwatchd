@@ -50,12 +50,12 @@ listSelect.addEventListener("change", changeSource);
 genreSelect.addEventListener("change", changeSource);
 sortSelect.addEventListener("change", changeSource);
 
-const swipe = enableSwipe(card, { peek: nextCard, onLeft: () => act("skip"), onRight: () => act("watched") });
+const swipe = enableSwipe(card, { peek: nextCard, onLeft: () => act("skip"), onRight: () => act("watched"), canSwipe: () => !!films[index] });
 
 document.addEventListener("keydown", (e) => {
   if (e.repeat) return;
   const el = document.activeElement;
-  if (el && (el.isContentEditable || el.tagName === "INPUT" || el.tagName === "TEXTAREA")) return;
+  if (el && (el.isContentEditable || el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT")) return;
   if (e.key === "ArrowRight") swipe.right();
   else if (e.key === "ArrowLeft") swipe.left();
   else if (e.key === "Backspace") { e.preventDefault(); back(); }
