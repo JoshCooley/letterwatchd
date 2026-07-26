@@ -33,6 +33,17 @@
   </header>
 
   <main>
+    <div class="source">
+      <select id="list">
+        <option value="popular">Popular</option>
+        <option value="trending">Trending</option>
+        <option value="top_rated">Top Rated</option>
+        <option value="now_playing">Now Playing</option>
+        <option value="genre">By Genre</option>
+      </select>
+      <select id="genre" hidden></select>
+      <select id="sort" hidden></select>
+    </div>
     <div class="deck-row">
       <div class="glow left"></div>
       <div class="glow right"></div>
@@ -61,6 +72,7 @@
     <h2>How to use</h2>
     <ol>
       <li>Optional: <strong>Import</strong> your Letterboxd <code>watched.csv</code> or export <code>.zip</code> to hide films you've already logged. Export it at <a href="https://letterboxd.com/user/exportdata/" target="_blank" rel="noopener">letterboxd.com/user/exportdata</a>.</li>
+      <li>Pick a <strong>source</strong> at the top: Popular (the default), Trending, Top Rated, Now Playing, or <strong>By Genre</strong> (which adds genre and sort menus).</li>
       <li><strong>Swipe</strong> the card, use <strong>Skip</strong> / <strong>Watch</strong>, or the <strong>arrow keys</strong>. Right = watched, left = skip. <strong>Back</strong> (or Backspace) revisits the last film.</li>
       <li>Review or remove entries in the <strong>Watched</strong> and <strong>Skipped</strong> lists below (collapse either to tidy up). <strong>Reset</strong> clears everything saved.</li>
       <li><strong>Export</strong> the CSV, then import it at <a href="https://letterboxd.com/import/" target="_blank" rel="noopener">letterboxd.com/import</a> as watched films.</li>

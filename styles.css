@@ -195,6 +195,23 @@ main {
   justify-content: center;
 }
 
+.source {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.source select {
+  font: inherit;
+  color: var(--heading);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
 .controls {
   display: flex;
   flex-direction: column;

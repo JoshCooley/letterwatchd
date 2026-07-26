@@ -67,6 +67,20 @@ export function clear() {
   for (const key of Object.values(KEYS)) localStorage.removeItem(key);
 }
 
+const DEFAULT_SOURCE = { list: "popular", genre: "Action", sort: "Popularity" };
+
+export function getSource() {
+  try {
+    return { ...DEFAULT_SOURCE, ...JSON.parse(localStorage.getItem("lw.source")) };
+  } catch (e) {
+    return { ...DEFAULT_SOURCE };
+  }
+}
+
+export function setSource(source) {
+  localStorage.setItem("lw.source", JSON.stringify(source));
+}
+
 export function isCollapsed(section) {
   return localStorage.getItem("lw.collapse." + section) === "1";
 }
