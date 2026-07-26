@@ -12,6 +12,7 @@ files=(
   index.html
   styles.css
   tmdb-logo.svg
+  favicon.svg
   app.js
   tmdb.js
   csv.js
