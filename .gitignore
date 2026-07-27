@@ -16,6 +16,17 @@ comments.csv
 # Build output
 dist/
 
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+import.tf
+crash.log
+node_modules/
+.wrangler/
+
 # OS and editor cruft
 .DS_Store
 Thumbs.db

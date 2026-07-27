@@ -5,8 +5,8 @@ set -o pipefail
 cd "$(dirname "$0")"
 
 dist="dist"
-rm --recursive --force "$dist"
-mkdir --parents "$dist/vendor"
+rm -rf "$dist"
+mkdir -p "$dist/vendor"
 
 files=(
   index.html
@@ -27,11 +27,5 @@ for f in "${files[@]}"; do
 done
 
 cp vendor/* "$dist/vendor/"
-
-if [ -f config.js ]; then
-  cp config.js "$dist/"
-else
-  echo "warning: config.js not found; copy config.example.js to config.js and add your TMDB key"
-fi
 
 echo "built $dist/"

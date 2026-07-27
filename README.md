@@ -6,21 +6,35 @@ Supports touch, mouse drags, and arrow keys. Right = watched, left = skip.
 
 Runs entirely in the browser, no backend.
 
+## Architecture
+
+* Static site: Cloudflare Worker with static assets, auto-deployed on push to `main`
+* API: TMDB proxied via a separate Worker on a `/api/*` route
+  - Key stored in Cloudflare Secrets Store
+  - Worker allowlists the five endpoints the app uses
+* Deploy: Terraform for the proxy Worker and its route
+
 ## Setup
 
 1. Get a free TMDB v3 API key from https://www.themoviedb.org/settings/api.
-2. Copy the config template and paste your key:
+2. Create a Secrets Store and put the key in it:
    ```
-   cp config.example.js config.js
+   npx wrangler secrets-store store create letterwatchd --remote
+   npx wrangler secrets-store secret create <STORE_ID> \
+     --name tmdb-api-key --scopes workers --remote
    ```
-   Then set `TMDB_API_KEY` in `config.js`.
-3. Serve the folder over HTTP (ES modules don't load from `file://`):
+3. Deploy:
    ```
-   python3 -m http.server 8000
+   cp terraform/terraform.tfvars.example terraform/terraform.tfvars
+   # fill in account_id, secrets_store_id
+   export CLOUDFLARE_API_TOKEN=...
+   terraform -chdir=terraform init
+   terraform -chdir=terraform apply
    ```
-   Open http://localhost:8000.
 
-`config.js` is gitignored so your key stays out of the repo.
+The API token needs `Workers Scripts:Edit`, `Workers Routes:Edit`, and
+`Secrets Store:Edit`. Edit rather than Read on the last one, because binding a
+secret to a Worker counts as a write against the secret.
 
 ## Usage
 

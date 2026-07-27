@@ -1,6 +1,4 @@
-import { TMDB_API_KEY } from "./config.js";
-
-const BASE = "https://api.themoviedb.org/3";
+const BASE = "/api";
 const IMG = "https://image.tmdb.org/t/p/w500";
 
 const LIST_PATHS = {
@@ -38,10 +36,10 @@ export function mapMovie(m) {
 export async function fetchFilms(source, page = 1) {
   let url;
   if (source.list === "genre") {
-    url = `${BASE}/discover/movie?api_key=${TMDB_API_KEY}&page=${page}&with_genres=${GENRES[source.genre]}&sort_by=${SORTS[source.sort]}`;
+    url = `${BASE}/discover/movie?page=${page}&with_genres=${GENRES[source.genre]}&sort_by=${SORTS[source.sort]}`;
     if (source.sort === "Rating") url += "&vote_count.gte=200";
   } else {
-    url = `${BASE}${LIST_PATHS[source.list]}?api_key=${TMDB_API_KEY}&page=${page}`;
+    url = `${BASE}${LIST_PATHS[source.list]}?page=${page}`;
   }
   const res = await fetch(url);
   if (!res.ok) throw new Error(`TMDB ${res.status}`);
