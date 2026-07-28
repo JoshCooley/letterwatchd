@@ -421,6 +421,11 @@ footer a {
   color: var(--blue);
 }
 
+footer .tmdb-logo {
+  height: 1em;
+  vertical-align: middle;
+}
+
 footer .github {
   display: inline-flex;
   align-items: center;

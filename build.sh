@@ -9,6 +9,7 @@ rm -rf "$dist"
 mkdir -p "$dist/vendor"
 
 files=(
+  _headers
   index.html
   styles.css
   tmdb-logo.svg
