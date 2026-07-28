@@ -27,6 +27,11 @@ resource "cloudflare_workers_script" "tmdb_proxy" {
 
   compatibility_date = "2026-06-16"
 
+  cache_options = {
+    enabled             = true
+    cross_version_cache = false
+  }
+
   bindings = [
     {
       name        = "TMDB_API_KEY"
