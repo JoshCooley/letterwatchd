@@ -17,6 +17,12 @@ data "cloudflare_zone" "this" {
   }
 }
 
+resource "cloudflare_zone_setting" "min_tls_version" {
+  zone_id    = data.cloudflare_zone.this.zone_id
+  setting_id = "min_tls_version"
+  value      = "1.2"
+}
+
 resource "cloudflare_workers_script" "tmdb_proxy" {
   account_id  = var.account_id
   script_name = "letterwatchd-tmdb-proxy"
