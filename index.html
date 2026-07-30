@@ -35,15 +35,15 @@
 
   <main>
     <div class="source">
-      <select id="list">
+      <select id="list" aria-label="Film source">
         <option value="popular">Popular</option>
         <option value="trending">Trending</option>
         <option value="top_rated">Top Rated</option>
         <option value="now_playing">Now Playing</option>
         <option value="genre">By Genre</option>
       </select>
-      <select id="genre" hidden></select>
-      <select id="sort" hidden></select>
+      <select id="genre" aria-label="Genre" hidden></select>
+      <select id="sort" aria-label="Sort by" hidden></select>
     </div>
     <div class="deck-row">
       <div class="glow left"></div>
@@ -67,7 +67,7 @@
     <section id="lists"></section>
   </main>
 
-  <input id="import-input" type="file" accept=".csv,.zip" hidden>
+  <input id="import-input" type="file" accept=".csv,.zip" aria-label="Import Letterboxd CSV or ZIP" hidden>
 
   <section class="howto">
     <h2>How to use</h2>
